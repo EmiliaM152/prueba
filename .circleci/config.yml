@@ -1,0 +1,77 @@
+version: 2.1
+
+# Variables globales
+defaults: &defaults
+  docker:
+    - image: circleci/node:16
+  working_directory: ~/project
+
+# Jobs definidos
+jobs:
+  # 1. Job de Instalación
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Instalar dependencias
+          command: npm install
+
+  # 2. Job de Linting
+  lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Ejecutar linter
+          command: npm run lint
+
+  # 3. Job de Pruebas con Paralelismo
+  test:
+    <<: *defaults
+    parallelism: 2  # Ejecutar pruebas en paralelo en 2 contenedores
+    steps:
+      - checkout
+      - run:
+          name: Ejecutar pruebas
+          command: |
+            echo "Dividiendo pruebas en contenedores"
+            npm run test -- --group=${CIRCLE_NODE_INDEX}
+
+  # 4. Job de Build
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Compilar proyecto
+          command: npm run build
+
+# Configuración de los workflows
+workflows:
+  version: 2
+
+  # Primer Workflow: Lint y Pruebas
+  lint_and_test:
+    jobs:
+      - lint
+      - test:
+          requires:
+            - lint
+
+  # Segundo Workflow: Build después de Lint y Pruebas
+  build_project:
+    jobs:
+      - install
+      - build:
+          requires:
+            - install
+            - test
+
+# Notificaciones para diferentes estados del pipeline
+notify:
+  webhooks:
+    - url: https://mi-webhook.com/notify
+      on:
+        - success
+        - fail
