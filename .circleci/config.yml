@@ -1,23 +1,22 @@
 version: 2.1
 
+# Uso del Orb de Python para simplificar la configuración.
+orbs:
+  python: circleci/python@2.1.1
+
 jobs:
   build-and-test:
-    docker:
-      - image: circleci/python:3.12  # Usa Python 3.12 como imagen base
+    # Utiliza un executor preconfigurado del Orb de Python.
+    executor: python/default  # Usa la versión por defecto del Orb
+
     steps:
-      - checkout  # Clona tu repositorio
+      - checkout  # Clona el repositorio
+      - python/install-packages:  # Instala las dependencias con pip
+          pkg-manager: pip
+          pip-dependency-file: requirements.txt  # Asegúrate de que este archivo existe
       - run:
-          name: Instalar dependencias
-          command: |
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt  # Instala pytest y otras dependencias
-      - run:
-          name: Establecer PYTHONPATH
-          command: |
-            export PYTHONPATH=$PYTHONPATH:$(pwd)  # Añade la raíz del proyecto al PYTHONPATH
-      - run:
-          name: Ejecutar pruebas con pytest
-          command: pytest  # Ejecuta pytest para descubrir y ejecutar las pruebas
+          name: Ejecutar Pruebas
+          command: pytest  # Ejecuta pytest para las pruebas
 
 workflows:
   version: 2
