@@ -1,31 +1,27 @@
-# Indica que estamos usando la versión 2.1 del motor de CircleCI
+# Usa la versión 2.1 del motor de CircleCI
 version: 2.1
 
-# Usando un orb de Python para simplificar el proceso de configuración
+# Importando el orb oficial de Python de CircleCI
 orbs:
-  python: circleci/python@1.2.3  # Puedes verificar la versión más reciente en la documentación de CircleCI
+  python: circleci/python@2.1.1  # Asegúrate de que esta versión esté disponible
 
-# Definición del trabajo principal
+# Definición del trabajo de construcción y prueba
 jobs:
-  test:
+  build-and-test:
     docker:
-      - image: circleci/python:3.8  # Imagen Docker con Python 3.8
+      - image: cimg/python:3.12  # Imagen oficial de Python 3.12
     steps:
-      - checkout  # Clona el código desde tu repositorio
-      - run:
-          name: Instalar dependencias
-          command: |
-            python -m pip install --upgrade pip
-            pip install -r requisitos.txt  # Instala las dependencias
+      - checkout  # Clona el repositorio
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: requisitos.txt  # Asegúrate de tener este archivo en el proyecto
       - run:
           name: Ejecutar pruebas
           command: |
-            python principal.py  # Cambia esto si tienes un script específico de pruebas
-            # O utiliza pytest si tus pruebas están estructuradas así: pytest
+            pytest  # Ejecuta pytest para las pruebas
 
-# Definición del flujo de trabajo
+# Definición del flujo de trabajo (workflow)
 workflows:
-  version: 2
-  test_and_build:
+  sample:
     jobs:
-      - test
+      - build-and-test
