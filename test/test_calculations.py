@@ -5,7 +5,8 @@ import os
 # Agregar el directorio raíz al PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from main import add, subtract  # Importación desde main.py
+ # Importación desde main.py
+from main import add, subtract
 
 class TestCalculations(unittest.TestCase):
     def test_add(self):
