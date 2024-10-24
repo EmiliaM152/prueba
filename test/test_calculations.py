@@ -1,10 +1,13 @@
-# test_calculations.py
+# test/test_calculations.py
+import sys
+import os
 
-import unittest
-from main import add, subtract
+# Agregar el directorio raíz al PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from main import add, subtract  # Importación desde main.py
 
 class TestCalculations(unittest.TestCase):
-    
     def test_add(self):
         self.assertEqual(add(10, 5), 15)
         self.assertEqual(add(-1, 1), 0)
